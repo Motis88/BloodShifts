@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920">
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="#fef2f2"/>
+  
+  <!-- Large blood drop icon -->
+  <circle cx="540" cy="800" r="200" fill="#e11d48"/>
+  <path d="M540 600c40 53.33 93.33 106.67 93.33 160a93.33 93.33 0 1 1-186.66 0c0-53.33 53.33-106.67 93.33-160z" fill="#fff"/>
+  
+  <!-- App name -->
+  <text x="540" y="1100" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#e11d48" text-anchor="middle">BloodShift</text>
+  <text x="540" y="1170" font-family="Arial, sans-serif" font-size="36" fill="#991b1b" text-anchor="middle">ניהול שיבוצי מד״א</text>
+</svg>

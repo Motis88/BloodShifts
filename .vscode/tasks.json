@@ -1,0 +1,182 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "🚀 התקן והפעל BloodShift על אנדרואיד",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '🩸 מתחיל התקנת BloodShift v2.0...' -ForegroundColor Green; Write-Host '📦 מתקין Dependencies...' -ForegroundColor Blue; npm install; Write-Host '🔨 בונה אפליקציה לאנדרואיד...' -ForegroundColor Yellow; npm run build; Write-Host '📱 מכין לאנדרואיד...' -ForegroundColor Cyan; npx cap add android; npx cap sync android; Write-Host '📂 פותח Android Studio...' -ForegroundColor Magenta; npx cap open android; Write-Host '✅ הושלם! Android Studio נפתח עם הפרויקט.' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "📦 התקן Dependencies בלבד",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '📦 מתקין dependencies...' -ForegroundColor Blue; npm install; Write-Host '✅ התקנה הושלמה!' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "⚡ בנה וסנכרן לאנדרואיד",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '📦 מתקין dependencies...' -ForegroundColor Blue; npm install; Write-Host '🔨 בונה אפליקציה...' -ForegroundColor Yellow; npm run build; Write-Host '� מכין אנדרואיד...' -ForegroundColor Cyan; npx cap add android; Write-Host '�🔄 מסנכרן עם אנדרואיד...' -ForegroundColor Magenta; npx cap sync android; Write-Host '📂 פותח Android Studio...' -ForegroundColor Green; npx cap open android; Write-Host '✅ הכל מוכן! Android Studio נפתח.' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔨 בנה אפליקציה לפרודקשן",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '🔨 בונה אפליקציה לפרודקשן...' -ForegroundColor Yellow; npm run build; Write-Host '✅ בנייה הושלמה!' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "📱 הכן לאנדרואיד ופתח Android Studio",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '📱 מכין פרויקט אנדרואיד...' -ForegroundColor Cyan; npx cap add android; npx cap sync android; Write-Host '📂 פותח Android Studio...' -ForegroundColor Magenta; npx cap open android; Write-Host '✅ Android Studio נפתח!' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🌐 הרץ שרת פיתוח",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '🌐 מפעיל שרת פיתוח...' -ForegroundColor Magenta; npm start"
+            ],
+            "group": "build",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔄 סנכרן קבצים עם אנדרואיד",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '🔄 מסנכרן קבצים עם אנדרואיד...' -ForegroundColor Blue; npx cap sync android; Write-Host '✅ סנכרון הושלם!' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🧹 נקה והתקן מחדש",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '🧹 מנקה קבצים ישנים...' -ForegroundColor Red; Remove-Item -Recurse -Force node_modules, package-lock.json -ErrorAction SilentlyContinue; Write-Host '📦 מתקין מחדש...' -ForegroundColor Blue; npm install; Write-Host '✅ ניקוי והתקנה הושלמו!' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔧 בדיקת מערכת ודרישות",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '🔧 בודק דרישות מערכת...' -ForegroundColor Blue; Write-Host '📱 Capacitor:' -ForegroundColor Yellow; npx cap doctor; Write-Host '📦 NPM Version:' -ForegroundColor Yellow; npm --version; Write-Host '⚡ Node Version:' -ForegroundColor Yellow; node --version; Write-Host '✅ בדיקה הושלמה!' -ForegroundColor Green"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🚀 קיצור: npm install → build → cap sync → cap open",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "cd c:\\bloodshift-new; Write-Host '📦 npm install...' -ForegroundColor Blue; npm install; Write-Host '🔨 npm run build...' -ForegroundColor Yellow; npm run build; Write-Host '🔄 npx cap sync android...' -ForegroundColor Cyan; npx cap sync android; Write-Host '📂 npx cap open android...' -ForegroundColor Magenta; npx cap open android; Write-Host '✅ סיימנו!' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        }
+    ]
+}

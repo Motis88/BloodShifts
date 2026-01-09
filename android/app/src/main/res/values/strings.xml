@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BloodShift</string>
+    <string name="title_activity_main">BloodShift</string>
+    <string name="package_name">com.example.bloodshift</string>
+    <string name="custom_url_scheme">com.example.bloodshift</string>
+</resources>
