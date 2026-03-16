@@ -129,6 +129,14 @@ const ShiftForm = () => {
         <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 mb-4 flex items-center justify-center gap-3 drop-shadow-lg">
           🩸 BloodShift
         </h1>
+        <a
+          href="https://github.com/Motis88/BloodShifts/releases/latest/download/app-debug.apk"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-base shadow-lg hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200"
+        >
+          📲 הורד APK לאנדרואיד
+        </a>
       </div>
 
       {/* כפתורי ניווט */}
