@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Save } from 'lucide-react';
+import { Save, Download } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import ArchiveManager from './ArchiveManager.jsx';
 
 const ShiftForm = () => {
@@ -120,6 +121,25 @@ const ShiftForm = () => {
     localStorage.setItem('bloodshift_schedule', JSON.stringify(currentEntries));
     
     alert(`${oldEntries.length} שיבוצים מימים שעברו הועברו לארכיון`);
+  };
+
+  const downloadSchedule = () => {
+    if (scheduleList.length === 0) {
+      alert('אין שיבוצים להורדה');
+      return;
+    }
+    const rows = sorted.map(item => ({
+      תאריך: item.date,
+      יום: hebDayLetter(item.date),
+      מיקום: item.location,
+      רופא: item.doctor || '',
+      טכנאים: (item.technicians || []).join(', ')
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'שיבוצים');
+    const fileName = `BloodShift_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
   };
 
   return (
@@ -309,10 +329,17 @@ const ShiftForm = () => {
 
           {/* טבלה לפי תאריכים */}
           <div className="mb-8 bg-white/90 dark:bg-zinc-900/80 rounded-2xl border-0 shadow-xl overflow-hidden backdrop-blur">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 shadow-md">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 shadow-md flex items-center justify-between">
               <h3 className="flex items-center gap-3 text-xl font-bold">
                 📅 כל השיבוצים לפי תאריך
               </h3>
+              <button
+                onClick={downloadSchedule}
+                className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-semibold text-sm transition-all shadow"
+              >
+                <Download size={16} />
+                הורד
+              </button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-center text-sm">
