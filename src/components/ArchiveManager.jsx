@@ -8,6 +8,7 @@ import {
 import jsPDF from 'jspdf';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
+import { useDebounce } from '../hooks/useDebounce';
 
 const ArchiveManager = () => {
   const [currentData, setCurrentData] = useState(() => {
@@ -48,6 +49,9 @@ const ArchiveManager = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('table'); // 'table', 'stats', 'charts'
 
+  // Debounce search term for better performance
+  const debouncedSearchTerm = useDebounce(filters.searchTerm, 300);
+
   // סינון הנתונים
   const filteredData = useMemo(() => {
     return scheduleList.filter(item => {
@@ -57,13 +61,13 @@ const ArchiveManager = () => {
       const matchesDoctor = !filters.doctor || item.doctor === filters.doctor;
       const matchesTechnician = !filters.technician || 
                item.technicians.includes(filters.technician);
-      const matchesSearch = !filters.searchTerm || 
+      const matchesSearch = !debouncedSearchTerm || 
                            [item.location, item.doctor, ...item.technicians].some(field => 
-                             field.toLowerCase().includes(filters.searchTerm.toLowerCase()));
+                             field.toLowerCase().includes(debouncedSearchTerm.toLowerCase()));
       
       return matchesDateRange && matchesLocation && matchesDoctor && matchesTechnician && matchesSearch;
     });
-  }, [scheduleList, filters]);
+  }, [scheduleList, filters.startDate, filters.endDate, filters.location, filters.doctor, filters.technician, debouncedSearchTerm]);
 
   // חישוב סטטיסטיקות
   const stats = useMemo(() => {

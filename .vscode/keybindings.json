@@ -1,0 +1,12 @@
+[
+    {
+        "key": "ctrl+shift+b",
+        "command": "workbench.action.tasks.runTask",
+        "args": "🚀 קיצור: npm install → build → cap sync → cap open"
+    },
+    {
+        "key": "ctrl+shift+r",
+        "command": "workbench.action.tasks.runTask",
+        "args": "🌐 הרץ שרת פיתוח"
+    }
+]

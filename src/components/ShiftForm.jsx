@@ -1,7 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Save } from 'lucide-react';
 import ArchiveManager from './ArchiveManager.jsx';
+import { ToastContainer } from './Toast.jsx';
+import ConfirmDialog from './ConfirmDialog.jsx';
 
 const ShiftForm = () => {
   const [showArchive, setShowArchive] = useState(false);
@@ -12,23 +14,91 @@ const ShiftForm = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [editIndex, setEditIndex] = useState(null);
-  // Dynamic lists for manual add
-  const [customLocations, setCustomLocations] = useState([]);
-  const [customDoctors, setCustomDoctors] = useState([]);
-  const [customTechnicians, setCustomTechnicians] = useState([]);
+  const [autoAddNotice, setAutoAddNotice] = useState('');
+  const [toasts, setToasts] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, index: null });
+  // Dynamic lists for manual add - with localStorage persistence
+  const [customLocations, setCustomLocations] = useState(() => {
+    const saved = localStorage.getItem('bloodshift_custom_locations');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [customDoctors, setCustomDoctors] = useState(() => {
+    const saved = localStorage.getItem('bloodshift_custom_doctors');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [customTechnicians, setCustomTechnicians] = useState(() => {
+    const saved = localStorage.getItem('bloodshift_custom_technicians');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const baseLocations = ['בית עובד','פתחיה','חולון','רחובות','איגוד ערים דן'];
   const doctors = ['מוטי','נטלי גרי','נטלי נבון','מאיה','מיקי','שחר','עדי','דור', ...customDoctors];
   const technicians = ['ליאור','עדן','שירה','תמר','שמעון','עמית','ראשל','ערן','הילה','דנה','שירי','אנה','גל','טל ברכה', ...customTechnicians];
 
-  const handleChange = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+  // Save custom lists to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('bloodshift_custom_locations', JSON.stringify(customLocations));
+  }, [customLocations]);
+
+  useEffect(() => {
+    localStorage.setItem('bloodshift_custom_doctors', JSON.stringify(customDoctors));
+  }, [customDoctors]);
+
+  useEffect(() => {
+    localStorage.setItem('bloodshift_custom_technicians', JSON.stringify(customTechnicians));
+  }, [customTechnicians]);
+
+  // Toast management functions
+  const addToast = (message, type = 'success', duration = 3000) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type, duration }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // בדיקה אוטומטית עבור איגוד ערים דן בימים ב'-ה'
+    if (field === 'date' && value) {
+      const selectedDate = new Date(value);
+      const dayOfWeek = selectedDate.getDay(); // 0=ראשון, 1=שני, 2=שלישי, 3=רביעי, 4=חמישי, 5=שישי, 6=שבת
+      
+      // ימים 1-4 = שני עד חמישי
+      if (dayOfWeek >= 1 && dayOfWeek <= 4) {
+        setFormData(prev => {
+          const currentLocations = prev.locations || [];
+          // בדוק אם איגוד ערים דן כבר לא במיקומים
+          if (!currentLocations.includes('איגוד ערים דן')) {
+            // הצג הודעה למשתמש
+            setAutoAddNotice('✅ איגוד ערים דן נוסף אוטומטית (ימים ב\'-ה\')');
+            setTimeout(() => setAutoAddNotice(''), 3000); // הסר הודעה אחרי 3 שניות
+            return { ...prev, locations: [...currentLocations, 'איגוד ערים דן'] };
+          }
+          return prev;
+        });
+      } else {
+        // אם זה לא יום ב'-ה', הסר את איגוד ערים דן אם נוסף אוטומטית
+        setAutoAddNotice('');
+      }
+    }
+  };
+  
   const handleLocationsChange = e => setFormData(prev => ({ ...prev, locations: Array.from(e.target.selectedOptions).map(o=>o.value) }));
   const handleDoctorChange = (loc, doc) => setLocationDetails(prev => ({ ...prev, [loc]: { ...prev[loc], doctor: doc } }));
   const handleTechChange = (loc, e) => setLocationDetails(prev => ({ ...prev, [loc]: { ...prev[loc], technicians: Array.from(e.target.selectedOptions).map(o=>o.value) } }));
 
   const handleSave = () => {
-    if (!formData.date) return alert('נא לבחור תאריך');
-    if (formData.locations.length === 0) return alert('נא לבחור מיקומים');
+    if (!formData.date) {
+      addToast('נא לבחור תאריך', 'warning');
+      return;
+    }
+    if (formData.locations.length === 0) {
+      addToast('נא לבחור לפחות מיקום אחד', 'warning');
+      return;
+    }
 
     const newList = [...scheduleList];
     
@@ -47,6 +117,7 @@ const ShiftForm = () => {
           : existingEntry.technicians
       };
       newList[editIndex] = updatedEntry;
+      addToast('✅ שיבוץ עודכן בהצלחה!', 'success');
     } else {
       // הוספת שיבוצים חדשים
       const entries = formData.locations.map(loc => ({
@@ -56,6 +127,7 @@ const ShiftForm = () => {
         technicians: locationDetails[loc]?.technicians || []
       }));
       newList.push(...entries);
+      addToast(`✅ נוספו ${entries.length} שיבוץ/ים בהצלחה!`, 'success');
     }
 
     setScheduleList(newList);
@@ -82,10 +154,15 @@ const ShiftForm = () => {
   };
 
   const handleDelete = idx=>{
+    setConfirmDelete({ isOpen: true, index: idx });
+  };
+
+  const confirmDeleteShift = () => {
     const updated=[...scheduleList]; 
-    updated.splice(idx,1);
+    updated.splice(confirmDelete.index,1);
     setScheduleList(updated);
     localStorage.setItem('bloodshift_schedule', JSON.stringify(updated));
+    addToast('🗑️ שיבוץ נמחק בהצלחה', 'info');
   };
 
   const handleEdit = item=>{
@@ -93,6 +170,13 @@ const ShiftForm = () => {
     setLocationDetails({ [item.location]: { doctor: item.doctor, technicians: item.technicians } });
     setEditIndex(item.originalIndex);
     window.scrollTo({ top:0, behavior:'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setFormData({ date: '', locations: [] });
+    setLocationDetails({});
+    setEditIndex(null);
+    addToast('✖️ עריכה בוטלה', 'info');
   };
 
   // העברה לארכיון של ימים שעברו
@@ -104,7 +188,7 @@ const ShiftForm = () => {
     const currentEntries = scheduleList.filter(item => new Date(item.date) >= today);
     
     if (oldEntries.length === 0) {
-      alert('אין ימים שעברו להעברה לארכיון');
+      addToast('אין ימים שעברו להעברה לארכיון', 'info');
       return;
     }
 
@@ -119,11 +203,23 @@ const ShiftForm = () => {
     setScheduleList(currentEntries);
     localStorage.setItem('bloodshift_schedule', JSON.stringify(currentEntries));
     
-    alert(`${oldEntries.length} שיבוצים מימים שעברו הועברו לארכיון`);
+    addToast(`📦 ${oldEntries.length} שיבוצים הועברו לארכיון`, 'success');
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-4 p-6 rounded-3xl shadow-2xl border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg">
+    <>
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+      <ConfirmDialog
+        isOpen={confirmDelete.isOpen}
+        onClose={() => setConfirmDelete({ isOpen: false, index: null })}
+        onConfirm={confirmDeleteShift}
+        title="⚠️ אישור מחיקה"
+        message="האם אתה בטוח שברצונך למחוק את השיבוץ? פעולה זו לא ניתנת לביטול."
+        confirmText="מחק"
+        cancelText="ביטול"
+        type="danger"
+      />
+      <div className="max-w-6xl mx-auto mt-4 p-6 rounded-3xl shadow-2xl border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg">
       {/* כותרת */}
       <div className="text-center mb-8">
         <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 mb-4 flex items-center justify-center gap-3 drop-shadow-lg">
@@ -159,11 +255,24 @@ const ShiftForm = () => {
         <ArchiveManager />
       ) : (
         <>
+          {/* הודעת תוספת אוטומטית */}
+          {autoAddNotice && (
+            <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/30 border-2 border-green-400 dark:border-green-600 rounded-xl text-green-800 dark:text-green-200 font-bold text-center animate-pulse shadow-lg">
+              {autoAddNotice}
+            </div>
+          )}
+
           {/* טופס שיבוץ יומי */}
           <div className="bg-gradient-to-r from-blue-100/80 to-indigo-100/80 dark:from-blue-900/60 dark:to-indigo-900/60 rounded-2xl p-6 mb-8 shadow-md backdrop-blur">
             <h2 className="text-2xl font-extrabold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700 dark:from-blue-200 dark:to-indigo-300 flex items-center justify-center gap-3 drop-shadow">
               📅 טופס שיבוץ יומי
             </h2>
+            
+            {/* הסבר על תוספת אוטומטית */}
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-200">
+              💡 <strong>טיפ:</strong> בימים ב׳-ה׳, "איגוד ערים דן" יתווסף אוטומטית למיקומים
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="font-semibold mb-3 text-gray-700 dark:text-gray-200">
@@ -296,13 +405,23 @@ const ShiftForm = () => {
                     </div>
                   </div>
                 ))}
-                <button 
-                  onClick={handleSave} 
-                  className="w-full p-4 rounded-full font-bold text-lg shadow-xl bg-gradient-to-r from-pink-500 to-indigo-500 text-white hover:from-pink-600 hover:to-indigo-600 transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-3"
-                >
-                  <Save size={20} />
-                  {editIndex !== null ? '💾 עדכן שיבוץ' : '✅ שמור שיבוץ'}
-                </button>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={handleSave} 
+                    className="flex-1 p-4 rounded-full font-bold text-lg shadow-xl bg-gradient-to-r from-pink-500 to-indigo-500 text-white hover:from-pink-600 hover:to-indigo-600 transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-3"
+                  >
+                    <Save size={20} />
+                    {editIndex !== null ? '💾 עדכן שיבוץ' : '✅ שמור שיבוץ'}
+                  </button>
+                  {editIndex !== null && (
+                    <button 
+                      onClick={handleCancelEdit}
+                      className="px-6 p-4 rounded-full font-bold text-lg shadow-xl bg-gray-500 text-white hover:bg-gray-600 transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+                    >
+                      ✖️ ביטול
+                    </button>
+                  )}
+                </div>
               </>
             )}
           </div>
@@ -332,10 +451,23 @@ const ShiftForm = () => {
                       <td colSpan={6} className="py-6 text-gray-400 dark:text-gray-500">אין שיבוצים להצגה</td>
                     </tr>
                   ) : (
-                    sorted.map((item, idx) => (
-                      <tr key={item.originalIndex} className="hover:bg-indigo-50 dark:hover:bg-zinc-800/40 transition-colors">
-                        <td className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 font-bold text-lg text-gray-900 dark:text-gray-100">
-                          {hebDayLetter(item.date)}
+                    sorted.map((item, idx) => {
+                      const isPast = new Date(item.date) < new Date(new Date().setHours(0, 0, 0, 0));
+                      const isToday = new Date(item.date).toDateString() === new Date().toDateString();
+                      return (
+                      <tr key={item.originalIndex} className={`transition-colors ${
+                        isPast 
+                          ? 'bg-gray-100 dark:bg-zinc-800/60 opacity-70' 
+                          : isToday 
+                            ? 'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30' 
+                            : 'hover:bg-indigo-50 dark:hover:bg-zinc-800/40'
+                      }`}>
+                        <td className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-lg text-gray-900 dark:text-gray-100">{hebDayLetter(item.date)}</span>
+                            {isToday && <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full font-bold">היום</span>}
+                            {isPast && <span className="text-xs bg-gray-400 text-white px-2 py-0.5 rounded-full">עבר</span>}
+                          </div>
                         </td>
                         <td className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                           <div className="font-medium text-gray-800 dark:text-gray-200">{item.date}</div>
@@ -383,7 +515,8 @@ const ShiftForm = () => {
                           </div>
                         </td>
                       </tr>
-                    ))
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -440,6 +573,7 @@ const ShiftForm = () => {
         </>
       )}
     </div>
+    </>
   );
 };
 

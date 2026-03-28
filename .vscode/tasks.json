@@ -165,9 +165,12 @@
             "command": "powershell",
             "args": [
                 "-Command",
-                "cd c:\\bloodshift-new; Write-Host '📦 npm install...' -ForegroundColor Blue; npm install; Write-Host '🔨 npm run build...' -ForegroundColor Yellow; npm run build; Write-Host '🔄 npx cap sync android...' -ForegroundColor Cyan; npx cap sync android; Write-Host '📂 npx cap open android...' -ForegroundColor Magenta; npx cap open android; Write-Host '✅ סיימנו!' -ForegroundColor Green"
+                "cd c:\\BloodShift; Write-Host '📦 npm install...' -ForegroundColor Blue; npm install; Write-Host '🔨 npm run build...' -ForegroundColor Yellow; npm run build; Write-Host '🔄 npx cap sync android...' -ForegroundColor Cyan; npx cap sync android; Write-Host '📂 npx cap open android...' -ForegroundColor Magenta; npx cap open android; Write-Host '✅ סיימנו!' -ForegroundColor Green"
             ],
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "presentation": {
                 "echo": true,
                 "reveal": "always",
