@@ -4,9 +4,11 @@ import { Save } from 'lucide-react';
 import ArchiveManager from './ArchiveManager.jsx';
 import { ToastContainer } from './Toast.jsx';
 import ConfirmDialog from './ConfirmDialog.jsx';
+import ExcelImport from './ExcelImport.jsx';
 
 const ShiftForm = () => {
   const [showArchive, setShowArchive] = useState(false);
+  const [showExcelImport, setShowExcelImport] = useState(false);
   const [formData, setFormData] = useState({ date: '', locations: [] });
   const [locationDetails, setLocationDetails] = useState({});
   const [scheduleList, setScheduleList] = useState(() => {
@@ -206,9 +208,32 @@ const ShiftForm = () => {
     addToast(`📦 ${oldEntries.length} שיבוצים הועברו לארכיון`, 'success');
   };
 
+  // ייבוא שיבוצים מקובץ אקסל
+  const handleExcelImport = (rows) => {
+    const existing = [...scheduleList];
+    existing.push(...rows);
+    setScheduleList(existing);
+    localStorage.setItem('bloodshift_schedule', JSON.stringify(existing));
+    // Add any new locations / doctors / technicians to the custom lists
+    const newLocs = [...new Set(rows.map(r => r.location).filter(Boolean))].filter(l => !([...baseLocations, ...customLocations].includes(l)));
+    const newDocs = [...new Set(rows.map(r => r.doctor).filter(Boolean))].filter(d => !doctors.includes(d));
+    const newTechs = [...new Set(rows.flatMap(r => r.technicians).filter(Boolean))].filter(t => !technicians.includes(t));
+    if (newLocs.length) setCustomLocations(prev => [...prev, ...newLocs]);
+    if (newDocs.length) setCustomDoctors(prev => [...prev, ...newDocs]);
+    if (newTechs.length) setCustomTechnicians(prev => [...prev, ...newTechs]);
+    setShowExcelImport(false);
+    addToast(`✅ יובאו ${rows.length} שיבוצים מהקובץ!`, 'success');
+  };
+
   return (
     <>
       <ToastContainer toasts={toasts} removeToast={removeToast} />
+      {showExcelImport && (
+        <ExcelImport
+          onImport={handleExcelImport}
+          onClose={() => setShowExcelImport(false)}
+        />
+      )}
       <ConfirmDialog
         isOpen={confirmDelete.isOpen}
         onClose={() => setConfirmDelete({ isOpen: false, index: null })}
@@ -228,7 +253,7 @@ const ShiftForm = () => {
       </div>
 
       {/* כפתורי ניווט */}
-      <div className="flex justify-center mb-8 bg-gray-100 dark:bg-zinc-800/60 rounded-2xl p-2 shadow">
+      <div className="flex flex-wrap justify-center gap-2 mb-8 bg-gray-100 dark:bg-zinc-800/60 rounded-2xl p-2 shadow">
         <button
           onClick={() => setShowArchive(false)}
           className={`px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-md text-lg ${
@@ -241,13 +266,19 @@ const ShiftForm = () => {
         </button>
         <button
           onClick={() => setShowArchive(true)}
-          className={`ml-4 px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-md text-lg ${
+          className={`px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-md text-lg ${
             showArchive 
               ? 'bg-gradient-to-r from-pink-500 to-yellow-500 text-white scale-105' 
               : 'text-gray-700 dark:text-gray-100 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 hover:shadow-lg'
           }`}
         >
           ארכיון
+        </button>
+        <button
+          onClick={() => setShowExcelImport(true)}
+          className="px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-md text-lg text-gray-700 dark:text-gray-100 bg-gray-100 dark:bg-zinc-800 hover:bg-green-100 dark:hover:bg-green-900/40 hover:text-green-700 dark:hover:text-green-300 hover:shadow-lg flex items-center gap-2"
+        >
+          📥 ייבוא אקסל
         </button>
       </div>
 
