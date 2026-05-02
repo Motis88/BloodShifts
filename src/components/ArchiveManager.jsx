@@ -342,6 +342,15 @@ const ArchiveManager = () => {
               <TrendingUp size={16} />
               <span className="hidden sm:inline">סטטיסטיקות</span>
             </button>
+            <button
+              onClick={() => setViewMode('charts')}
+              className={`flex items-center justify-center gap-2 px-3 md:px-4 py-2 rounded-lg transition-all text-xs md:text-sm flex-1 md:flex-initial ${
+                viewMode === 'charts' ? 'bg-white dark:bg-zinc-700 text-blue-600 dark:text-blue-400 shadow-sm font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-zinc-700/50'
+              }`}
+            >
+              <BarChart3 size={16} />
+              <span className="hidden sm:inline">גרפים</span>
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -699,21 +708,108 @@ const ArchiveManager = () => {
       )}
 
       {viewMode === 'charts' && (
-        <div className="bg-white p-8 rounded-xl border border-gray-200 text-center">
-          <BarChart3 size={64} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">📈 גרפים וויזואליזציה</h3>
-          <p className="text-gray-600 mb-6">
-            תכונה זו תוסף בגרסה עתידית ותכלול גרפים אינטראקטיביים ומתקדמים
-          </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">💡 תכונות מתוכננות:</h4>
-            <ul className="text-blue-700 text-sm space-y-1">
-              <li>📊 גרף עמודות לשיבוצים לפי מיקום</li>
-              <li>🥧 גרף עוגה לחלוקת רופאים</li>
-              <li>📈 גרף קווים למגמות לאורך זמן</li>
-              <li>🎨 תצוגה אינטראקטיבית</li>
-            </ul>
-          </div>
+        <div className="space-y-6">
+          {filteredData.length === 0 ? (
+            <div className="bg-white dark:bg-zinc-900 p-12 rounded-xl border border-gray-200 dark:border-gray-700 text-center text-gray-500 dark:text-gray-400">
+              <BarChart3 size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+              <p>אין נתונים להצגה</p>
+            </div>
+          ) : (
+            <>
+              {/* גרף עמודות – שיבוצים לפי מיקום */}
+              {Object.keys(stats.locationCounts).length > 0 && (
+                <div className="bg-white dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                  <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+                    <MapPin size={20} />
+                    📊 שיבוצים לפי מיקום
+                  </h3>
+                  <div className="space-y-3">
+                    {Object.entries(stats.locationCounts)
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([location, count]) => {
+                        const maxCount = Math.max(...Object.values(stats.locationCounts));
+                        const pct = Math.round((count / maxCount) * 100);
+                        return (
+                          <div key={location} className="flex items-center gap-3">
+                            <span className="w-32 text-sm font-medium text-gray-700 dark:text-gray-300 text-right truncate shrink-0">{location}</span>
+                            <div className="flex-1 bg-gray-100 dark:bg-zinc-800 rounded-full h-7 overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
+                                style={{ width: `${pct}%` }}
+                              >
+                                <span className="text-white text-xs font-bold">{count}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {/* גרף עמודות – שיבוצים לפי רופא */}
+              {Object.keys(stats.doctorCounts).length > 0 && (
+                <div className="bg-white dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                  <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+                    <UserCheck size={20} />
+                    👨‍⚕️ שיבוצים לפי רופא
+                  </h3>
+                  <div className="space-y-3">
+                    {Object.entries(stats.doctorCounts)
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([doctor, count]) => {
+                        const maxCount = Math.max(...Object.values(stats.doctorCounts));
+                        const pct = Math.round((count / maxCount) * 100);
+                        return (
+                          <div key={doctor} className="flex items-center gap-3">
+                            <span className="w-32 text-sm font-medium text-gray-700 dark:text-gray-300 text-right truncate shrink-0">{doctor}</span>
+                            <div className="flex-1 bg-gray-100 dark:bg-zinc-800 rounded-full h-7 overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
+                                style={{ width: `${pct}%` }}
+                              >
+                                <span className="text-white text-xs font-bold">{count}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {/* גרף עמודות – שיבוצים לפי טכנאי */}
+              {Object.keys(stats.technicianCounts).length > 0 && (
+                <div className="bg-white dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                  <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+                    <Users size={20} />
+                    🔬 שיבוצים לפי טכנאי
+                  </h3>
+                  <div className="space-y-3">
+                    {Object.entries(stats.technicianCounts)
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([tech, count]) => {
+                        const maxCount = Math.max(...Object.values(stats.technicianCounts));
+                        const pct = Math.round((count / maxCount) * 100);
+                        return (
+                          <div key={tech} className="flex items-center gap-3">
+                            <span className="w-32 text-sm font-medium text-gray-700 dark:text-gray-300 text-right truncate shrink-0">{tech}</span>
+                            <div className="flex-1 bg-gray-100 dark:bg-zinc-800 rounded-full h-7 overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-orange-400 to-amber-500 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
+                                style={{ width: `${pct}%` }}
+                              >
+                                <span className="text-white text-xs font-bold">{count}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
     </div>
