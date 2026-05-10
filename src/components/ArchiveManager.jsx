@@ -315,7 +315,7 @@ const ArchiveManager = () => {
               {archiveStats.oldestDate ? 
                 Math.ceil((Date.now() - archiveStats.oldestDate) / (1000 * 60 * 60 * 24)) : 0}
             </div>
-            <div className="text-xs text-gray-600">ימים בארכיון</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400">ימים בארכיון</div>
           </div>
         </div>
       </div>
@@ -415,7 +415,7 @@ const ArchiveManager = () => {
               />
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 <Calendar size={16} />
                 עד תאריך
               </label>
@@ -423,11 +423,11 @@ const ArchiveManager = () => {
                 type="date"
                 value={filters.endDate}
                 onChange={e => setFilters(prev => ({...prev, endDate: e.target.value}))}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               />
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 <MapPin size={16} />
                 מיקום
               </label>
@@ -443,14 +443,14 @@ const ArchiveManager = () => {
               </select>
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 <UserCheck size={16} />
                 רופא
               </label>
               <select
                 value={filters.doctor}
                 onChange={e => setFilters(prev => ({...prev, doctor: e.target.value}))}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               >
                 <option value="">הכל</option>
                 {uniqueDoctors.map(doc => (
@@ -459,14 +459,14 @@ const ArchiveManager = () => {
               </select>
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 <Users size={16} />
                 טכנאי
               </label>
               <select
                 value={filters.technician}
                 onChange={e => setFilters(prev => ({...prev, technician: e.target.value}))}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               >
                 <option value="">הכל</option>
                 {uniqueTechnicians.map(tech => (
@@ -475,7 +475,7 @@ const ArchiveManager = () => {
               </select>
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 <Search size={16} />
                 חיפוש כללי
               </label>
@@ -647,67 +647,87 @@ const ArchiveManager = () => {
               📊 סטטיסטיקות כלליות
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                <span className="text-blue-800 font-medium">סה"כ שיבוצים</span>
-                <span className="text-2xl font-bold text-blue-600">{stats.total}</span>
+              <div className="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                <span className="text-blue-800 dark:text-blue-200 font-medium">סה"כ שיבוצים</span>
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.total}</span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                <span className="text-green-800 font-medium">מיקומים פעילים</span>
-                <span className="text-2xl font-bold text-green-600">{stats.locations}</span>
+              <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                <span className="text-green-800 dark:text-green-200 font-medium">מיקומים פעילים</span>
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.locations}</span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                <span className="text-purple-800 font-medium">רופאים פעילים</span>
-                <span className="text-2xl font-bold text-purple-600">{stats.doctors}</span>
+              <div className="flex justify-between items-center p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+                <span className="text-purple-800 dark:text-purple-200 font-medium">רופאים פעילים</span>
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.doctors}</span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
-                <span className="text-orange-800 font-medium">טכנאים פעילים</span>
-                <span className="text-2xl font-bold text-orange-600">{stats.technicians}</span>
+              <div className="flex justify-between items-center p-3 bg-orange-50 dark:bg-orange-900/30 rounded-lg">
+                <span className="text-orange-800 dark:text-orange-200 font-medium">טכנאים פעילים</span>
+                <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.technicians}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-gray-200">
-            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+            <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
               <MapPin size={20} />
               🏥 שיבוצים לפי מיקום
             </h3>
             <div className="space-y-2">
               {Object.entries(stats.locationCounts).map(([location, count]) => (
-                <div key={location} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span className="text-sm font-medium">{location}</span>
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">{count}</span>
+                <div key={location} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-zinc-800 rounded">
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{location}</span>
+                  <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs">{count}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-gray-200">
-            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+            <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
               <UserCheck size={20} />
               👨‍⚕️ שיבוצים לפי רופא
             </h3>
             <div className="space-y-2">
               {Object.entries(stats.doctorCounts).map(([doctor, count]) => (
-                <div key={doctor} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span className="text-sm font-medium">{doctor}</span>
-                  <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">{count}</span>
+                <div key={doctor} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-zinc-800 rounded">
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{doctor}</span>
+                  <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full text-xs">{count}</span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+            <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+              <Users size={20} />
+              🔧 שיבוצים לפי טכנאי
+            </h3>
+            <div className="space-y-2">
+              {Object.entries(stats.technicianCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([tech, count]) => (
+                <div key={tech} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-zinc-800 rounded">
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{tech}</span>
+                  <span className="bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 px-2 py-1 rounded-full text-xs">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.technicianCounts).length === 0 && (
+                <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">אין נתוני טכנאים</p>
+              )}
             </div>
           </div>
         </div>
       )}
 
       {viewMode === 'charts' && (
-        <div className="bg-white p-8 rounded-xl border border-gray-200 text-center">
-          <BarChart3 size={64} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">📈 גרפים וויזואליזציה</h3>
-          <p className="text-gray-600 mb-6">
+        <div className="bg-white dark:bg-zinc-900 p-8 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
+          <BarChart3 size={64} className="mx-auto text-gray-400 dark:text-gray-600 mb-4" />
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">📈 גרפים וויזואליזציה</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
             תכונה זו תוסף בגרסה עתידית ותכלול גרפים אינטראקטיביים ומתקדמים
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">💡 תכונות מתוכננות:</h4>
-            <ul className="text-blue-700 text-sm space-y-1">
+          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">💡 תכונות מתוכננות:</h4>
+            <ul className="text-blue-700 dark:text-blue-300 text-sm space-y-1">
               <li>📊 גרף עמודות לשיבוצים לפי מיקום</li>
               <li>🥧 גרף עוגה לחלוקת רופאים</li>
               <li>📈 גרף קווים למגמות לאורך זמן</li>
