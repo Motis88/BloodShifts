@@ -794,24 +794,27 @@ const ShiftForm = () => {
                 });
               });
               const sorted = Object.entries(techCount).sort((a, b) => b[1] - a[1]);
-              if (sorted.length === 0) return null;
               return (
                 <div className="mt-4">
                   <h4 className="text-xs font-bold text-indigo-700 dark:text-indigo-300 mb-2">🔧 שיבוצים לפי טכנאי</h4>
-                  <div className="space-y-1">
-                    {sorted.map(([tech, count]) => (
-                      <div key={tech} className="flex items-center gap-2">
-                        <span className="text-xs text-gray-700 dark:text-gray-300 w-20 truncate">{tech}</span>
-                        <div className="flex-1 bg-gray-200 dark:bg-zinc-700 rounded-full h-2">
-                          <div
-                            className="bg-indigo-500 dark:bg-indigo-400 h-2 rounded-full transition-all"
-                            style={{ width: `${Math.round((count / sorted[0][1]) * 100)}%` }}
-                          />
+                  {sorted.length === 0 ? (
+                    <p className="text-xs text-gray-400 dark:text-gray-500 text-center">אין שיבוצי טכנאים עדיין</p>
+                  ) : (
+                    <div className="space-y-1">
+                      {sorted.map(([tech, count]) => (
+                        <div key={tech} className="flex items-center gap-2">
+                          <span className="text-xs text-gray-700 dark:text-gray-300 w-20 truncate">{tech}</span>
+                          <div className="flex-1 bg-gray-200 dark:bg-zinc-700 rounded-full h-2">
+                            <div
+                              className="bg-indigo-500 dark:bg-indigo-400 h-2 rounded-full transition-all"
+                              style={{ width: `${Math.round((count / sorted[0][1]) * 100)}%` }}
+                            />
+                          </div>
+                          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 w-5 text-right">{count}</span>
                         </div>
-                        <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 w-5 text-right">{count}</span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })()}
